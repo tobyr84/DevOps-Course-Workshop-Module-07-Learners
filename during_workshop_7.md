@@ -12,11 +12,11 @@ We'll be working on top of this repository. Because you'll need to change some s
 
 ### Step 2 - Set up the app
 
-This repository contains a minimal .NET Core app. You don't need to worry about exactly how the code works, but you should be able to build, test and run it. It uses [npm](https://www.npmjs.com/) which is a package manager for the Node JavaScript platform. 
+This repository contains a minimal .NET Core app. You don't need to worry about exactly how the code works, but you should be able to build, test and run it. It uses [npm](https://www.npmjs.com/) which is a package manager for the Node JavaScript platform. **If you are struggling to run the code locally, you should skip to step 3 before spending too much time trying to resolve the issue.** It's only preferable to run it locally first to better understand what you want GitHub Actions to replicate.
 
 #### Build
 1. Run `dotnet build` from the terminal in the project folder. This will build the C# code.
-2. Run `npm run build` (if it's your first time building you also need to run `npm install`) in the DotnetTemplate.Web folder. This will build the typescript code.
+2. From the DotnetTemplate.Web folder, run `npm install` (first time only) and then `npm run build`. This will build the typescript code. If you see errors during installation containing "gyp ERR", you may need to first run `npm install --global windows-build-tools` (and restart your terminal).
 
 #### Run
 1. Run `dotnet run` in the DotnetTemplate.Web folder. This will start the app.
@@ -27,7 +27,7 @@ This repository contains a minimal .NET Core app. You don't need to worry about 
 #### Test
 1. Run `dotnet test` inside the project folder. This will run the C# tests in the DotnetTemplate.Web.Tests project.
 2. Run `npm t` inside the DotnetTemplate.Web folder. This will run the typescript tests in DotnetTemplate.Web/Scripts/spec. They're run using [Jasmine](https://jasmine.github.io/).
-3. Run `npm run lint` inside the DotnetTemplate.Web folder. This will run linting on the typescript code, using [eslint](https://eslint.org/).
+3. Run `npm run lint` inside the DotnetTemplate.Web folder. This will run linting on the typescript code, using [eslint](https://eslint.org/). Linting refers to checking the codebase for mistakes, either functional or stylistic. This project's linting currently reports zero errors, one warning.
 
 ### Step 3 - Set up GitHub Actions
 
@@ -112,11 +112,13 @@ Change your workflow so that it only runs when pushing to the main branch or by 
 ## Part 2 (Jenkins)
 
 ### Step 1 - Run Jenkins locally
-There are two options for running Jenkins locally, you can either install Jenkins or run it through docker. We would recommend running Jenkins through docker and the instructions for that are [here](https://www.jenkins.io/doc/book/installing/#docker).
+There are two options for running Jenkins locally, you can either install Jenkins or run it through docker. We would recommend running Jenkins through docker and the instructions for that are [here](https://www.jenkins.io/doc/book/installing/#docker). 
+
+**NB:** step 4 of the Windows instructions wants you to follow step 4 of the Mac/Linux instructions
 
 ### Step 2 - Set up Jenkins
 Once you've done the step above you should have Jenkins running on http://localhost:8080/. If you go to this url in a browser it should show you a setup page.
-1. Login with the password you got from the logs when starting Jenkins.
+1. Login with the password you got from the logs when starting Jenkins. **Hint:** You can run `docker logs your_container` to access a container's logs. Run `docker container ls` to view a list of running containers. 
 2. Now you have the option to select some initial plugins. For now, make sure you tick the GitHub plugin. We won't need any others right away, and you can add more later.
 3. Create an admin user.
 4. Use the default jenkins url (http://localhost:8080)
@@ -145,7 +147,7 @@ You have 2 options for installing .NET Core & npm inside jenkins:
 1. Make installation separate build stages
     * This is not ideal as you will have to run the installation on each build
 2. [Specify containers to run stages of the jenkins pipeline with .NET Core and npm pre-installed](https://www.jenkins.io/doc/book/pipeline/docker/)
-    * There are some pre-built images for npm (e.g. `node:14-alpine`) but for .NET Core you'll want to use either [Microsoft's images](https://hub.docker.com/_/microsoft-dotnet-core-sdk) or [script the installation from a base image such as alpine linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux-alpine)
+    * There are some pre-built images for npm (e.g. `node:14-alpine`) but for .NET Core you'll want to use either [Microsoft's images](https://hub.docker.com/_/microsoft-dotnet-core-sdk) or [script the installation from a base image such as alpine linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux-alpine). You may need to set an environment variable `DOTNET_CLI_HOME` (e.g. to `"/tmp/dotnet_cli_home"`) in your Jenkinsfile for the dotnet CLI to work correctly.
 
 #### Run the Jenkins job
 1. Commit and push your new Jenkinsfile.
